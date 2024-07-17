@@ -13,4 +13,4 @@ class Foo(object):
         return obj
 
 o = Foo()
-#print(o, end=' ')
+print(o, end=' ')
