@@ -1,16 +1,20 @@
-class Foo(object):
-    obj = 0
+import asyncio
+from random import randint
 
-    def __new__(cls, *dt, **mp):
-        print(cls, end=' ')
-        return object.__new__(cls, *dt, **mp).obj
+async def hello():
+    await asyncio.sleep(1)
+    print("Hello",end=" ")
 
-    def __init__(self):
-        self.obj += 2
-        print(self, end=' ')
+async def world():
+    for char in "World":
+        await asyncio.sleep(randint(3,4))
+        print(char,end="",flush=True)
 
-    def __str__(self, x):
-        return obj
-
-o = Foo()
-print(o, end=' ')
+async def do_smth_else():
+    print(sum(range(5)),end=" ")
+    
+async def main():
+    await asyncio.gather(hello(), world(),do_smth_else())
+    
+if __name__ == '__main__':
+    asyncio.run(main())
