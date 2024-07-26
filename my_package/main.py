@@ -1,20 +1,18 @@
 
-def count_upper_in_file(filename):
-    # Reading the file and counting uppercase letters
-    with open(filename) as f:
-        #Using generator expression
-        num_uppercase = sum(1 for line in f for character in line if character.isupper())
-    print(num_uppercase)
+def my_decorator(arg):
+    def actual_decorator(function):
+        def wrapper(*args,**kwargs):
+            # здесь можно использовать arg
+            result = function(*args,**kwargs)  # вызов оригинальной функции
+            dec_res = arg * result
+            print(f"Sum of integers from 0 to {args[0] - 1} multipled by {arg} is {dec_res}")
+        return wrapper
+        
+    return actual_decorator
 
-if __name__ == "__main__":
+#multiplies the result
+@my_decorator(3)
+def sum_of_ints(x:int):
+    return sum(range(x))
 
-    file_content = """Hello World!
-    This is a test file.
-    Python is Fun!"""
-    # Writing the example content to the file for demonstration purposes
-    with open('filename.txt', 'w') as f:
-        f.write(file_content)
-
-    count_upper_in_file('filename.txt')
-    
-
+sum_of_ints(10)
