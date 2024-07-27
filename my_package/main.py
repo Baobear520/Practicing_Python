@@ -1,18 +1,12 @@
+import copy
 
-def my_decorator(arg):
-    def actual_decorator(function):
-        def wrapper(*args,**kwargs):
-            # здесь можно использовать arg
-            result = function(*args,**kwargs)  # вызов оригинальной функции
-            dec_res = arg * result
-            print(f"Sum of integers from 0 to {args[0] - 1} multipled by {arg} is {dec_res}")
-        return wrapper
-        
-    return actual_decorator
+a = 'dog'
+b = copy.copy(a)
 
-#multiplies the result
-@my_decorator(3)
-def sum_of_ints(x:int):
-    return sum(range(x))
+print(id(a),id(b))
 
-sum_of_ints(10)
+a += 's'
+print(id(a),id(b))
+
+b = copy.deepcopy(a)
+print(id(a),id(b))
