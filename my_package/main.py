@@ -1,26 +1,20 @@
-x = 0
-def func(x=2):
-    print(x)
+def data_source():
+    for i in range(10):
+        yield i
 
-x = 4
-func(3)
+def filter_even_numbers(data):
+    for item in data:
+        if item % 2 == 0:
+            yield item
 
-def f(a, L=[]):
-    L.append(a)
-    return L
+def square_numbers(data):
+    for item in data:
+        yield item * item
 
-print(f(1))
-print(f(2))
-print(f(3))
+# Usage
+pipeline = data_source()
+pipeline = filter_even_numbers(pipeline)
+pipeline = square_numbers(pipeline)
 
-#how to avoid it
-
-def f(a,L=None):
-    if L is None:
-        L = []
-    L.append(a)
-    return L
-
-print(f(1))
-print(f(2))
-print(f(3))
+for result in pipeline:
+    print(result)
