@@ -1,6 +1,5 @@
 x = 4
 
-
 def some_func(el,lst=[]):
     lst.append(el)
 
