@@ -11,15 +11,14 @@ def top3_heaviest_words(input: str):
         }
     chars_map.update({"-":0, "'":0})
 
-    words_list = set([word.strip(",").lower() for word in input.split()])
-    print(words_list)
-
-    weight_map = {}
-    for word in words_list:
-        weight = sum(chars_map.get(letter) for letter in word)
-        weight_map.update({word: weight})
-        print(f"{word} weighs {weight}")
-        print(weight_map)
+    words_hashmap = {
+        # keys are words with stripped commas
+        # values are results of summing all weights in each word
+        word.strip(",").lower(): sum(chars_map.get(letter,0) for letter in word) 
+        for word in input.split()
+        }
+    
+    print(sorted(words_hashmap.items(),key=lambda item: item[1], reverse=True)[:3])
     
 
 if __name__ == "__main__":
