@@ -1,5 +1,20 @@
 import functools
 
+def my_decor(param: int):
+    def outer_wrapper(func):
+        @functools.wraps(func)
+        def inner_wrapper(*args, **kwargs):
+            for _ in range(param):
+                func(*args, **kwargs)
+        return inner_wrapper
+    return outer_wrapper
+
+
+def say_my_name(name: str)-> None:
+    print(name.upper(), end=' ')
+
+my_decor(3)(say_my_name)('dima') # outer_wrapper(say_my_name) inner_wrapper('dima')
+
 
 def logcall(params=True, result=True):
     def my_decorator(func):
