@@ -1,5 +1,5 @@
 from collections.abc import Iterable, Iterator
-from typing import Optional, IO
+from typing import Optional, IO, LiteralString
 
 
 class MyIter:
@@ -79,3 +79,21 @@ with open('/Users/aldmikon/Desktop/phrases.txt', 'r') as stream:
     iterator = CustomIterator(stream=stream, chunk_size=64)
     for chunk in iterator:
         print(chunk)
+
+class StrIterator:
+    def __init__(self, text: LiteralString | str):
+        if not text or not isinstance(text, str):
+            raise TypeError("The text parameter must be a non-empty string.")
+        self.text = text
+        self.current = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        while self.current <= len(self.text) - 1:
+            char = self.text[self.current]
+            self.current += 1
+            if char.lower() not in ("a", "e", "i", "o", "u"):
+                return char
+        raise StopIteration
