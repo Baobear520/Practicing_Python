@@ -71,6 +71,139 @@ docs = api_client.get_docs()
 docs = api_client.get_docs()
 
 
+"""Еще одна версия"""
+
+from datetime import datetime
+import requests
+import jwt
+import xml.etree.ElementTree as ET
+
+
+class API:
+    def __init__(self, host: str, username: str, password: str):
+        self.host = host.rstrip('/')
+        self.username = username
+        self.password = password
+        self.access_token = None
+        self.refresh_token = None
+        self.data = None
+
+    def __convert_to_xml(self):
+        if self.data and isinstance(self.data, dict):
+            root = ET.Element("document")
+            for key, value in self.data.items():
+                ET.SubElement(root, key).text = str(value)
+            return ET.tostring(root, encoding="utf-8")
+        raise TypeError("Attribute 'data' must be DictType ")
+
+    def __is_token_expired(self):
+        if not self.access_token:
+            return True
+        try:
+            payload = jwt.decode(
+                self.access_token,
+                options={"verify_signature": False}
+            )
+            exp = payload.get("exp")
+            if not exp:
+                return True
+            return datetime.utcnow() > datetime.utcfromtimestamp(exp)
+        except jwt.DecodeError:
+            return True
+
+    def __validate_token(self):
+        if self.access_token and not self.__is_token_expired():
+            return True
+        if self.refresh_token:
+            try:
+                self.refresh()
+                return True
+            except Exception:
+                self.login()
+                return True
+        return False
+
+    def login(self):
+        response = requests.post(
+            f"{self.host}/api/auth/login",
+            json={"login": self.username, "password": self.password}
+        )
+        response.raise_for_status()
+        data = response.json()
+        self.access_token = data.get("access_token")
+        self.refresh_token = data.get("refresh_token")
+
+    def refresh(self):
+        response = requests.post(
+            f"{self.host}/api/auth/refresh",
+            json={"refresh_token": self.refresh_token}
+        )
+        response.raise_for_status()
+        data = response.json()
+        self.access_token = data.get("access_token")
+        self.refresh_token = data.get("refresh_token")
+
+    def get_docs(self):
+        if not self.__validate_token():
+            raise Exception("Authentication failed")
+        response = requests.get(
+            f"{self.host}/api/docs",
+            headers={"Authorization": f"Bearer {self.access_token}"}
+        )
+        if response.status_code == 401:
+            self.refresh()
+            return self.get_docs()
+        response.raise_for_status()
+        return response.text
+
+    def validate_data(self):
+        if not self.__validate_token():
+            raise Exception("Authentication failed")
+
+        doc = self.__convert_to_xml()
+        response = requests.post(
+            f"{self.host}/api/docs/validate",
+            data=doc,
+            headers={"Content-Type": "application/xml"}
+        )
+        if response.status_code == 401:
+            self.refresh()
+            return self.validate_data()
+        response.raise_for_status()
+        return response.json()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
